@@ -1,0 +1,793 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Start Your Search — Sam Schneider</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;1,400&family=DM+Serif+Display&display=swap" rel="stylesheet"/>
+<style>
+:root {
+  --bg: #f5f3ef;
+  --surface: #ffffff;
+  --surface2: #f0ede8;
+  --border: #e2ddd7;
+  --border2: #ccc8c0;
+  --text: #1a1816;
+  --text2: #6b665f;
+  --text3: #a09b93;
+  --accent: #b5a48a;
+  --green: #1e8449;
+  --green-bg: #edfaf3;
+  --red: #c0392b;
+  --radius: 12px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+.top-bar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-shrink: 0;
+}
+.brand { font-family: 'DM Serif Display', serif; font-size: 17px; color: var(--text); letter-spacing: -0.2px; }
+.brand-sub { font-size: 11.5px; color: var(--text3); margin-top: 1px; }
+.progress-wrap { display: flex; align-items: center; gap: 10px; }
+.progress-bar { width: 120px; height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+.progress-fill { height: 100%; background: var(--text); border-radius: 2px; transition: width 0.4s ease; }
+.progress-label { font-size: 11px; color: var(--text3); white-space: nowrap; }
+.step-area { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 32px 20px 100px; }
+.step { display: none; width: 100%; max-width: 560px; animation: fadeUp 0.28s ease; }
+.step.active { display: block; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(14px); } to { opacity:1; transform:translateY(0); } }
+.step-q { font-family: 'DM Serif Display', serif; font-size: 26px; color: var(--text); line-height: 1.25; margin-bottom: 8px; letter-spacing: -0.4px; }
+.step-hint { font-size: 13px; color: var(--text3); margin-bottom: 24px; line-height: 1.5; }
+.step-sub { font-family: 'DM Serif Display', serif; font-size: 20px; color: var(--text); margin: 20px 0 6px; letter-spacing: -0.3px; }
+input[type="text"], input[type="email"], input[type="tel"], input[type="number"], input[type="date"], select, textarea {
+  font-family: 'DM Sans', sans-serif; font-size: 16px; padding: 13px 16px;
+  border: 1.5px solid var(--border); border-radius: var(--radius);
+  background: var(--surface); color: var(--text); outline: none; width: 100%;
+  transition: border-color 0.15s; -webkit-appearance: none; appearance: none;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--text); }
+input::placeholder, textarea::placeholder { color: var(--text3); }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-bottom: 12px; }
+.grid2.single { grid-template-columns: 1fr; }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 8px; }
+.chip {
+  font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 10px 20px;
+  border-radius: 40px; border: 1.5px solid var(--border);
+  background: var(--surface); color: var(--text2); cursor: pointer; transition: all 0.15s; user-select: none;
+}
+.chip:hover { border-color: var(--border2); color: var(--text); }
+.chip.sel { background: var(--text); color: var(--surface); border-color: var(--text); }
+.chip.sm { font-size: 13px; padding: 8px 16px; }
+.chip.umbrella { border-style: solid; border-width: 1.5px; border-color: var(--accent); color: var(--text); font-weight: 500; }
+.chip.umbrella.sel { background: var(--text); color: var(--surface); border-color: var(--text); }
+.tag-wrap { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 10px; min-height: 8px; }
+.tag { display: inline-flex; align-items: center; gap: 5px; background: var(--surface2); border: 1px solid var(--border); border-radius: 20px; padding: 5px 12px; font-size: 13px; color: var(--text2); }
+.tag button { background: none; border: none; color: var(--text3); cursor: pointer; font-size: 15px; line-height: 1; padding: 0; }
+.tag button:hover { color: var(--red); }
+.ac-wrap { position: relative; }
+.ac-dd { display: none; position: absolute; top: calc(100% + 4px); left: 0; right: 0; background: var(--surface); border: 1.5px solid var(--border2); border-radius: var(--radius); z-index: 99; max-height: 200px; overflow-y: auto; box-shadow: 0 8px 24px rgba(0,0,0,0.08); }
+.ac-item { padding: 11px 16px; font-size: 14px; cursor: pointer; color: var(--text); border-bottom: 1px solid var(--border); transition: background 0.1s; }
+.ac-item:last-child { border-bottom: none; }
+.ac-item:hover, .ac-item.hi { background: var(--surface2); }
+.ac-item strong { font-weight: 500; }
+.sug-row { margin-top: 10px; }
+.sug-label { font-size: 12px; color: var(--text3); margin-bottom: 6px; }
+.sug-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.sug-chip { font-family: 'DM Sans', sans-serif; font-size: 12px; padding: 5px 12px; border-radius: 20px; border: 1px solid var(--border2); background: var(--surface); color: var(--text2); cursor: pointer; transition: all 0.12s; }
+.sug-chip:hover { background: var(--surface2); color: var(--text); }
+.bed-bud { background: var(--surface); border: 1.5px solid var(--border); border-radius: var(--radius); padding: 14px 16px; margin-bottom: 10px; }
+.bed-bud-label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3); font-weight: 500; margin-bottom: 10px; }
+.bottom-nav { position: fixed; bottom: 0; left: 0; right: 0; background: var(--surface); border-top: 1px solid var(--border); padding: 14px 24px; display: flex; align-items: center; justify-content: space-between; gap: 12px; z-index: 50; }
+.btn { font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 500; padding: 12px 28px; border-radius: var(--radius); border: 1.5px solid var(--border2); background: var(--surface); color: var(--text); cursor: pointer; transition: all 0.15s; }
+.btn:hover { background: var(--surface2); }
+.btn-p { background: var(--text); color: var(--surface); border-color: var(--text); flex: 1; max-width: 220px; }
+.btn-p:hover { opacity: 0.85; }
+.btn-p:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn-back { color: var(--text3); border-color: transparent; background: none; padding: 12px 8px; }
+.btn-back:hover { color: var(--text); background: none; }
+.block { border: 1.5px solid var(--border); border-radius: var(--radius); padding: 16px; margin-bottom: 12px; background: var(--bg); position: relative; }
+.block-title { font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: var(--text3); font-weight: 500; margin-bottom: 12px; }
+.rem-btn { position: absolute; top: 12px; right: 12px; background: none; border: none; font-size: 18px; color: var(--text3); cursor: pointer; line-height: 1; }
+.rem-btn:hover { color: var(--red); }
+.add-btn { width: 100%; font-family: 'DM Sans', sans-serif; font-size: 14px; padding: 12px; border: 1.5px dashed var(--border2); border-radius: var(--radius); background: none; color: var(--text2); cursor: pointer; transition: all 0.15s; margin-top: 4px; }
+.add-btn:hover { background: var(--surface2); color: var(--text); }
+.credit-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+.cr-chip { font-family: 'DM Sans', sans-serif; font-size: 12.5px; padding: 10px 6px; border-radius: 8px; border: 1.5px solid var(--border); background: var(--surface); color: var(--text2); cursor: pointer; text-align: center; transition: all 0.15s; }
+.cr-chip:hover { border-color: var(--border2); }
+.cr-chip.sel { background: var(--text); color: var(--surface); border-color: var(--text); }
+.fl { font-size: 11px; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text3); font-weight: 500; margin-bottom: 6px; display: block; }
+.hint { font-size: 11px; color: var(--text3); margin-top: 4px; }
+.preset-divider { width: 100%; height: 1px; background: var(--border); margin: 8px 0; }
+.preset-section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); font-weight: 500; margin-bottom: 6px; margin-top: 4px; }
+.amenity-section-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.07em; color: var(--text3); font-weight: 500; margin-bottom: 8px; margin-top: 18px; }
+.amenity-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 4px; }
+.amenity-chip {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: 'DM Sans', sans-serif; font-size: 13.5px;
+  padding: 9px 14px; border-radius: 40px;
+  border: 1.5px solid var(--border); background: var(--surface);
+  color: var(--text2); cursor: pointer; transition: all 0.15s; user-select: none;
+}
+.amenity-chip:hover { border-color: var(--border2); color: var(--text); }
+.amenity-chip.want { border-color: var(--accent); color: var(--text); background: #faf8f4; }
+.amenity-chip.need { border-color: var(--text); background: var(--text); color: var(--surface); }
+.ac-label { pointer-events: none; }
+.ac-toggle {
+  display: inline-flex; align-items: center;
+  background: rgba(255,255,255,0.15); border-radius: 20px;
+  overflow: hidden; border: 1px solid rgba(0,0,0,0.1);
+  font-size: 10px; font-weight: 500; letter-spacing: 0.03em;
+  pointer-events: none;
+}
+.amenity-chip.want .ac-toggle { background: rgba(181,164,138,0.15); border-color: rgba(181,164,138,0.3); }
+.amenity-chip.need .ac-toggle { background: rgba(255,255,255,0.15); border-color: rgba(255,255,255,0.25); }
+.ac-opt { padding: 3px 8px; transition: all 0.15s; color: var(--text3); pointer-events: all; cursor: pointer; }
+.amenity-chip.want .want-opt { background: var(--accent); color: white; }
+.amenity-chip.need .need-opt { background: rgba(255,255,255,0.25); color: white; }
+.amenity-chip.need .want-opt { color: rgba(255,255,255,0.5); }
+.success { display: none; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 60px 24px; flex: 1; }
+.s-check { width: 56px; height: 56px; border-radius: 50%; background: var(--green-bg); display: flex; align-items: center; justify-content: center; font-size: 22px; margin: 0 auto 20px; color: var(--green); }
+.s-title { font-family: 'DM Serif Display', serif; font-size: 28px; color: var(--text); margin-bottom: 10px; letter-spacing: -0.4px; }
+.s-sub { font-size: 15px; color: var(--text2); max-width: 340px; line-height: 1.6; }
+@media (max-width: 480px) { .step-q { font-size: 22px; } .grid2 { grid-template-columns: 1fr; } .credit-grid { grid-template-columns: repeat(2,1fr); } }
+</style>
+</head>
+<body>
+
+<div class="top-bar">
+  <div>
+    <div class="brand">Start Your Search</div>
+    <div class="brand-sub">Sam Schneider · The Davidov Team</div>
+  </div>
+  <div class="progress-wrap">
+    <div class="progress-bar"><div class="progress-fill" id="pfill" style="width:0%"></div></div>
+    <div class="progress-label" id="plabel">Step 1 of 10</div>
+  </div>
+</div>
+
+<div class="step-area" id="step-area">
+
+  <!-- 1: NAME -->
+  <div class="step active" id="step-1">
+    <div class="step-q">Let's start with your name.</div>
+    <div class="step-hint">We'll use this to personalize your search.</div>
+    <div class="grid2">
+      <input type="text" id="s1-first" placeholder="First name" oninput="upd()"/>
+      <input type="text" id="s1-last" placeholder="Last name" oninput="upd()"/>
+    </div>
+  </div>
+
+  <!-- 2: CONTACT -->
+  <div class="step" id="step-2">
+    <div class="step-q" id="s2q">Nice to meet you! How can we reach you?</div>
+    <div class="step-hint">So we can send you listings as soon as they come up.</div>
+    <div class="grid2 single" style="margin-bottom:12px">
+      <input type="tel" id="s2-phone" placeholder="Phone number" oninput="upd()"/>
+    </div>
+    <div class="grid2 single">
+      <input type="email" id="s2-email" placeholder="Email address" oninput="upd()"/>
+    </div>
+  </div>
+
+  <!-- 3: PARTNERS -->
+  <div class="step" id="step-3">
+    <div class="step-q">Is anyone else searching with you?</div>
+    <div class="step-hint">Roommates, a partner, or co-signers — add them so we can find the right fit for everyone. Skip if it's just you.</div>
+    <div id="partners-list"></div>
+    <button class="add-btn" onclick="addPartner()">+ Add a search partner</button>
+  </div>
+
+  <!-- 4: NEIGHBORHOODS -->
+  <div class="step" id="step-4">
+    <div class="step-q">Where do you want to live?</div>
+    <div class="step-hint">Tap a zone to add its neighborhoods — then remove any you don't want. You can mix and match.</div>
+    <div id="preset-chips" style="margin-bottom:16px"></div>
+    <div class="tag-wrap" id="hood-tags"></div>
+    <div class="ac-wrap">
+      <input type="text" id="hood-input" placeholder="Or type any neighborhood..." autocomplete="off"
+        oninput="onHoodType(this)" onkeydown="onHoodKey(event)"/>
+      <div class="ac-dd" id="ac-dd"></div>
+    </div>
+    <div class="sug-row" id="sug-row"></div>
+    <input type="hidden" id="neighborhoods"/>
+  </div>
+
+  <!-- 5: BEDS + BUDGETS -->
+  <div class="step" id="step-5">
+    <div class="step-q">What size are you looking for?</div>
+    <div class="step-hint">Select all that apply — we'll ask your budget for each size separately.</div>
+    <div class="chips" style="margin-bottom:20px">
+      <div class="chip" onclick="toggleBed(this,'Studio')">Studio</div>
+      <div class="chip" onclick="toggleBed(this,'1 BR')">1 BR</div>
+      <div class="chip" onclick="toggleBed(this,'2 BR')">2 BR</div>
+      <div class="chip" onclick="toggleBed(this,'3 BR')">3 BR</div>
+      <div class="chip" onclick="toggleBed(this,'4 BR')">4 BR</div>
+      <div class="chip" onclick="toggleBed(this,'5 BR+')">5 BR+</div>
+    </div>
+    <div id="bed-budgets"></div>
+    <input type="hidden" id="bedrooms"/>
+  </div>
+
+  <!-- 6: MOVEIN + OP -->
+  <div class="step" id="step-6">
+    <div class="step-q">When do you need to move in?</div>
+    <div class="step-hint">This helps us filter what's actually available for your timeline.</div>
+    <div class="grid2 single" style="margin-bottom:28px">
+      <input type="date" id="s6-movein" oninput="upd()"/>
+    </div>
+    <div class="step-sub">Are you open to paying a broker fee?</div>
+    <div class="step-hint">No fee means the landlord covers our commission — more listings may be available if you're open to both.</div>
+    <div class="chips">
+      <div class="chip" onclick="sc(this,'op','no-fee')">No fee only</div>
+      <div class="chip" onclick="sc(this,'op','open')">Open to both</div>
+    </div>
+    <input type="hidden" id="op"/>
+  </div>
+
+  <!-- 7: AMENITIES + PETS -->
+  <div class="step" id="step-7">
+    <div class="step-q">What matters to you in an apartment?</div>
+    <div class="step-hint">Tap once to mark as a want, tap again to make it a must-have. Skip anything you don't care about.</div>
+
+    <div class="amenity-section-label">Laundry</div>
+    <div class="amenity-chips" id="ac-laundry">
+      <div class="amenity-chip" onclick="tapAmenity(this,'wd-unit')"><span class="ac-label">W/D in unit</span><span class="ac-toggle" style="display:none"><span class="ac-opt want-opt active">Want</span><span class="ac-opt need-opt">Need</span></span></div>
+      <div class="amenity-chip" onclick="tapAmenity(this,'wd-building')"><span class="ac-label">Laundry in building</span><span class="ac-toggle" style="display:none"><span class="ac-opt want-opt active">Want</span><span class="ac-opt need-opt">Need</span></span></div>
+    </div>
+
+    <div class="amenity-section-label">Building</div>
+    <div class="amenity-chips">
+      <div class="amenity-chip" onclick="tapAmenity(this,'doorman')"><span class="ac-label">Doorman</span><span class="ac-toggle" style="display:none"><span class="ac-opt want-opt active">Want</span><span class="ac-opt need-opt">Need</span></span></div>
+      <div class="amenity-chip" onclick="tapAmenity(this,'virtual-doorman')"><span class="ac-label">Virtual doorman</span><span class="ac-toggle" style="display:none"><span class="ac-opt want-opt active">Want</span><span class="ac-opt need-opt">Need</span></span></div>
+      <div class="amenity-chip" onclick="tapAmenity(this,'elevator')"><span class="ac-label">Elevator</span><span class="ac-toggle" style="display:none"><span class="ac-opt want-opt active">Want</span><span class="ac-opt need-opt">Need</span></span></div>
+      <div class="amenity-chip" onclick="tapAmenity(this,'gym')"><span class="ac-label">Gym</span><span class="ac-toggle" style="display:none"><span class="ac-opt want-opt active">Want</span><span class="ac-opt need-opt">Need</span></span></div>
+      <div class="amenity-chip" onclick="tapAmenity(this,'mailroom')"><span class="ac-label">Mailroom</span><span class="ac-toggle" style="display:none"><span class="ac-opt want-opt active">Want</span><span class="ac-opt need-opt">Need</span></span></div>
+      <div class="amenity-chip" onclick="tapAmenity(this,'storage')"><span class="ac-label">Storage unit</span><span class="ac-toggle" style="display:none"><span class="ac-opt want-opt active">Want</span><span class="ac-opt need-opt">Need</span></span></div>
+      <div class="amenity-chip" onclick="tapAmenity(this,'parking')"><span class="ac-label">Parking</span><span class="ac-toggle" style="display:none"><span class="ac-opt want-opt active">Want</span><span class="ac-opt need-opt">Need</span></span></div>
+      <div class="amenity-chip" onclick="tapAmenity(this,'roof-deck')"><span class="ac-label">Roof deck</span><span class="ac-toggle" style="display:none"><span class="ac-opt want-opt active">Want</span><span class="ac-opt need-opt">Need</span></span></div>
+      <div class="amenity-chip" onclick="tapAmenity(this,'outdoor-space')"><span class="ac-label">Private outdoor space</span><span class="ac-toggle" style="display:none"><span class="ac-opt want-opt active">Want</span><span class="ac-opt need-opt">Need</span></span></div>
+    </div>
+
+    <div class="amenity-section-label">Apartment</div>
+    <div class="amenity-chips">
+      <div class="amenity-chip" onclick="tapAmenity(this,'dishwasher')"><span class="ac-label">Dishwasher</span><span class="ac-toggle" style="display:none"><span class="ac-opt want-opt active">Want</span><span class="ac-opt need-opt">Need</span></span></div>
+      <div class="amenity-chip" onclick="tapAmenity(this,'central-ac')"><span class="ac-label">Central AC</span><span class="ac-toggle" style="display:none"><span class="ac-opt want-opt active">Want</span><span class="ac-opt need-opt">Need</span></span></div>
+      <div class="amenity-chip" onclick="tapAmenity(this,'high-ceilings')"><span class="ac-label">High ceilings</span><span class="ac-toggle" style="display:none"><span class="ac-opt want-opt active">Want</span><span class="ac-opt need-opt">Need</span></span></div>
+      <div class="amenity-chip" onclick="tapAmenity(this,'home-office')"><span class="ac-label">Home office / flex space</span><span class="ac-toggle" style="display:none"><span class="ac-opt want-opt active">Want</span><span class="ac-opt need-opt">Need</span></span></div>
+      <div class="amenity-chip" onclick="tapAmenity(this,'prewar')"><span class="ac-label">Prewar / exposed brick</span><span class="ac-toggle" style="display:none"><span class="ac-opt want-opt active">Want</span><span class="ac-opt need-opt">Need</span></span></div>
+      <div class="amenity-chip" onclick="tapAmenity(this,'stainless')"><span class="ac-label">Stainless appliances</span><span class="ac-toggle" style="display:none"><span class="ac-opt want-opt active">Want</span><span class="ac-opt need-opt">Need</span></span></div>
+    </div>
+
+    <div class="amenity-section-label" style="margin-top:20px">Pets</div>
+    <div class="chips" style="margin-bottom:12px">
+      <div class="chip" onclick="setPets('no',this)">No pets</div>
+      <div class="chip" onclick="setPets('maybe',this)">No pets now, but want pet-friendly</div>
+      <div class="chip" onclick="setPets('yes',this)">Yes, I have pets</div>
+    </div>
+    <input type="hidden" id="has-pets"/>
+    <div id="pet-details" style="display:none;margin-top:4px">
+      <div style="margin-bottom:12px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;color:var(--text2);margin-bottom:8px">
+          <input type="checkbox" id="has-dog" onchange="document.getElementById('dog-f').style.display=this.checked?'block':'none'" style="width:16px;height:16px;accent-color:var(--text);flex-shrink:0"/> Dogs
+        </label>
+        <div id="dog-f" style="display:none;padding-left:24px">
+          <div id="dog-list"></div>
+          <button class="add-btn" style="margin-top:6px" onclick="addDog()">+ Add a dog</button>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;color:var(--text2);margin-bottom:8px">
+          <input type="checkbox" id="has-cat" onchange="document.getElementById('cat-f').style.display=this.checked?'block':'none'" style="width:16px;height:16px;accent-color:var(--text);flex-shrink:0"/> Cats
+        </label>
+        <div id="cat-f" style="display:none;padding-left:24px">
+          <label class="fl">How many?</label>
+          <input type="number" id="cat-count" min="1" max="10" placeholder="1" style="width:100px"/>
+        </div>
+      </div>
+      <div>
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:14px;color:var(--text2)">
+          <input type="checkbox" id="has-other" onchange="document.getElementById('other-f').style.display=this.checked?'block':'none'" style="width:16px;height:16px;accent-color:var(--text);flex-shrink:0"/> Other
+        </label>
+        <div id="other-f" style="display:none;padding-left:24px;margin-top:8px">
+          <input type="text" id="other-desc" placeholder="Describe your pet(s)"/>
+        </div>
+      </div>
+    </div>
+    <input type="hidden" id="amenities"/>
+  </div>
+
+  <!-- 8: FINANCIALS -->
+  <div class="step" id="step-8">
+    <div class="step-q">Let's talk finances.</div>
+    <div class="step-hint">NYC landlords typically require 40–45x the monthly rent in annual income. This stays strictly between us and helps us find realistic options fast.</div>
+    <div id="fin-blocks"></div>
+  </div>
+
+  <!-- 9: GUARANTOR -->
+  <div class="step" id="step-9">
+    <div class="step-q">Will you have a guarantor?</div>
+    <div class="step-hint">A guarantor can unlock more options if income or credit doesn't hit the threshold on its own.</div>
+    <div class="chips" style="margin-bottom:16px">
+      <div class="chip" onclick="setG('none',this)">No guarantor</div>
+      <div class="chip" onclick="setG('personal',this)">Personal guarantor</div>
+      <div class="chip" onclick="setG('third',this)">3rd party (Insurent, TheGuarantors, etc.)</div>
+    </div>
+    <input type="hidden" id="gtype"/>
+    <div id="g-personal" style="display:none">
+      <div class="grid2" style="margin-bottom:12px">
+        <div><label class="fl">First name</label><input type="text" id="g-first" placeholder="First name"/></div>
+        <div><label class="fl">Last name</label><input type="text" id="g-last" placeholder="Last name"/></div>
+      </div>
+      <div class="grid2" style="margin-bottom:12px">
+        <div><label class="fl">Annual income</label><input type="text" id="g-income" placeholder="e.g. $120,000" oninput="fmt(this)"/></div>
+        <div><label class="fl">Relationship</label>
+          <select id="g-rel"><option value="">Select...</option><option>Parent</option><option>Sibling</option><option>Relative</option><option>Employer</option><option>Other</option></select>
+        </div>
+      </div>
+      <label class="fl">Credit score range</label>
+      <div class="credit-grid">
+        <div class="cr-chip" onclick="selCr('g-cr',this)">Below 580</div>
+        <div class="cr-chip" onclick="selCr('g-cr',this)">580–619</div>
+        <div class="cr-chip" onclick="selCr('g-cr',this)">620–659</div>
+        <div class="cr-chip" onclick="selCr('g-cr',this)">660–699</div>
+        <div class="cr-chip" onclick="selCr('g-cr',this)">700–739</div>
+        <div class="cr-chip" onclick="selCr('g-cr',this)">740–779</div>
+        <div class="cr-chip" onclick="selCr('g-cr',this)">780+</div>
+      </div>
+      <input type="hidden" id="g-cr"/>
+    </div>
+    <div id="g-third" style="display:none">
+      <label class="fl">Provider (if known)</label>
+      <select id="g-prov"><option value="">Not sure yet</option><option>Insurent</option><option>TheGuarantors</option><option>Leap</option><option>Other</option></select>
+    </div>
+  </div>
+
+  <!-- 10: FINAL -->
+  <div class="step" id="step-10">
+    <div class="step-q">Last couple of questions.</div>
+    <div class="step-hint">Totally optional — but helpful for us to serve you better.</div>
+    <div style="margin-bottom:24px">
+      <div class="step-sub" style="font-size:18px;margin-bottom:6px">Any interest in buying down the road?</div>
+      <div class="chips" style="margin-bottom:12px">
+        <div class="chip" onclick="sc(this,'buying','no')">Not right now</div>
+        <div class="chip" onclick="sc(this,'buying','exploring')">Maybe, still exploring</div>
+        <div class="chip" onclick="sc(this,'buying','yes')">Yes, actively looking</div>
+      </div>
+      <input type="hidden" id="buying"/>
+      <div id="buy-fields" style="display:none;margin-top:12px">
+        <div class="grid2">
+          <div><label class="fl">Approx. purchase budget</label><input type="text" id="buy-budget" placeholder="e.g. $800,000" oninput="fmt(this)"/></div>
+          <div><label class="fl">Timeline</label>
+            <select id="buy-timeline"><option value="">Select...</option><option>Within 6 months</option><option>6–12 months</option><option>1–2 years</option><option>Just exploring</option></select>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div class="step-sub" style="font-size:18px;margin-bottom:6px">How did you hear about us?</div>
+      <div class="chips" style="margin-bottom:10px">
+        <div class="chip" onclick="setRef('referral',this)">Referral</div>
+        <div class="chip" onclick="setRef('streeteasy',this)">StreetEasy</div>
+        <div class="chip" onclick="setRef('listing',this)">Inquired on a listing</div>
+        <div class="chip" onclick="setRef('instagram',this)">Instagram</div>
+        <div class="chip" onclick="setRef('google',this)">Google</div>
+        <div class="chip" onclick="setRef('other',this)">Other</div>
+      </div>
+      <input type="hidden" id="ref-src"/>
+      <div id="ref-name" style="display:none">
+        <input type="text" id="ref-who" placeholder="Who referred you?"/>
+      </div>
+      <div id="ref-listing" style="display:none;margin-top:10px">
+        <input type="text" id="ref-listing-addr" placeholder="Which listing? (address or description)"/>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="success" id="success">
+  <div class="s-check">✓</div>
+  <div class="s-title">You're all set.</div>
+  <div class="s-sub">We'll be in touch shortly with listings that match your search. Looking forward to finding you something great.</div>
+</div>
+
+<div class="bottom-nav" id="bnav">
+  <button class="btn btn-back" id="bbk" onclick="back()" style="visibility:hidden">← Back</button>
+  <button class="btn btn-p" id="bnxt" onclick="next()">Continue →</button>
+</div>
+
+<script>
+const TOTAL = 10;
+let cur = 1;
+let beds = [];
+let budgets = {};
+let hoods = [];
+let pCount = 0;
+let dCount = 0;
+let activePresets = new Set();
+
+const PRESETS = [
+  // Popular Areas
+  {l:'Downtown Manhattan', h:['West Village','Greenwich Village','Hudson Square','SoHo','Tribeca','NoHo','Nolita','Little Italy','Chinatown','Two Bridges','Lower East Side','East Village','Alphabet City','Financial District','Battery Park City'], area: true},
+  {l:'Park Slope & Surrounding Areas', h:['Park Slope','Boerum Hill','Cobble Hill','Carroll Gardens','Fort Greene','Prospect Heights','Clinton Hill','Gowanus','Red Hook'], area: true},
+  {l:'Upper East Side & Upper West Side', h:['Upper East Side','Lenox Hill','Yorkville','Carnegie Hill','Upper West Side','Lincoln Square','Morningside Heights'], area: true},
+  // Popular Neighborhoods
+  {l:'West Village & Greenwich Village', h:['West Village','Greenwich Village','Hudson Square']},
+  {l:'Williamsburg & Greenpoint', h:['Williamsburg','Greenpoint']},
+  {l:'Lower East Side & East Village', h:['Lower East Side','East Village','Alphabet City']},
+  {l:'SoHo & Tribeca', h:['SoHo','Tribeca','NoHo','Nolita']},
+  {l:'Murray Hill & Kips Bay', h:['Murray Hill','Kips Bay','Gramercy']},
+  {l:'Astoria & Long Island City', h:['Astoria','Long Island City','Sunnyside']},
+];
+
+const ALL_H = [...new Set([
+  ...PRESETS.flatMap(p=>p.h),
+  'Harlem','East Harlem','West Harlem','Washington Heights','Inwood','Fort George',
+  'DUMBO','Brooklyn Heights','Red Hook','Sunset Park','Bay Ridge','Ditmas Park',
+  'Kensington','Ridgewood','Bushwick','Woodside','Jackson Heights','Forest Hills',
+  'Chelsea','Hell\'s Kitchen','Gramercy','Flatiron','Murray Hill','Kips Bay',
+  'Upper East Side','Lenox Hill','Yorkville','Carnegie Hill',
+  'Upper West Side','Lincoln Square','Morningside Heights',
+  'Riverdale','Mott Haven'
+])].sort();
+
+const REL = {
+  'West Village':['Greenwich Village','SoHo','Tribeca'],
+  'Greenwich Village':['West Village','NoHo','East Village'],
+  'SoHo':['Tribeca','NoHo','Nolita','West Village'],
+  'Tribeca':['SoHo','Financial District'],
+  'East Village':['Lower East Side','Greenwich Village'],
+  'Lower East Side':['East Village','Nolita'],
+  'Williamsburg':['Greenpoint','Bushwick','Bed-Stuy'],
+  'Greenpoint':['Williamsburg','Bushwick'],
+  'Park Slope':['Prospect Heights','Fort Greene','Cobble Hill','Gowanus','Boerum Hill'],
+  'Fort Greene':['Clinton Hill','Boerum Hill','Park Slope'],
+  'Cobble Hill':['Carroll Gardens','Boerum Hill','Park Slope'],
+  'Boerum Hill':['Cobble Hill','Fort Greene','Carroll Gardens'],
+  'Bed-Stuy':['Crown Heights','Bushwick'],
+  'Chelsea':['Hell\'s Kitchen','Flatiron','West Village'],
+  'Upper East Side':['Lenox Hill','Yorkville'],
+  'Astoria':['Long Island City','Sunnyside'],
+};
+
+const BED_ORD = ['Studio','1 BR','2 BR','3 BR','4 BR','5 BR+'];
+
+function initPresets() {
+  const el = document.getElementById('preset-chips');
+  let html = '<div class="preset-section-label">Popular Areas</div>';
+  html += '<div class="chips" style="margin-bottom:12px">';
+  PRESETS.forEach((p,i) => {
+    if (!p.area && i > 0 && PRESETS[i-1].area) {
+      html += '</div><div class="preset-section-label" style="margin-top:4px">Popular Neighborhoods</div><div class="chips" style="margin-bottom:12px">';
+    }
+    html += `<div class="chip ${p.area?'':'sm'}" onclick="toggleP(${i},this)">${p.l}</div>`;
+  });
+  html += '</div>';
+  el.innerHTML = html;
+}
+
+function toggleP(i, el) {
+  const p = PRESETS[i];
+  if (activePresets.has(i)) {
+    activePresets.delete(i); el.classList.remove('sel');
+    p.h.forEach(h=>{ hoods=hoods.filter(x=>x!==h); });
+  } else {
+    activePresets.add(i); el.classList.add('sel');
+    p.h.forEach(h=>{ if(!hoods.includes(h)) hoods.push(h); });
+    showSug(p.h[0]);
+  }
+  renderTags(); upd();
+}
+
+let acList=[], acIdx=-1;
+function onHoodType(inp) {
+  const q=inp.value.trim().toLowerCase();
+  const dd=document.getElementById('ac-dd');
+  if(!q){dd.style.display='none';acList=[];return;}
+  acList=ALL_H.filter(n=>n.toLowerCase().includes(q)&&!hoods.includes(n)).slice(0,7);
+  if(!acList.length){dd.style.display='none';return;}
+  acIdx=-1; dd.style.display='block';
+  dd.innerHTML=acList.map((n,i)=>{
+    const idx=n.toLowerCase().indexOf(q);
+    const hl=n.slice(0,idx)+'<strong>'+n.slice(idx,idx+q.length)+'</strong>'+n.slice(idx+q.length);
+    return `<div class="ac-item" id="ac${i}" onclick="pickH('${n}')">${hl}</div>`;
+  }).join('');
+}
+function onHoodKey(e) {
+  if(e.key==='ArrowDown'){e.preventDefault();acIdx=Math.min(acIdx+1,acList.length-1);hiAc();}
+  else if(e.key==='ArrowUp'){e.preventDefault();acIdx=Math.max(acIdx-1,0);hiAc();}
+  else if(e.key==='Enter'){e.preventDefault();acIdx>=0&&acList[acIdx]?pickH(acList[acIdx]):pickH(document.getElementById('hood-input').value.trim());}
+  else if(e.key==='Escape'){document.getElementById('ac-dd').style.display='none';}
+}
+function hiAc(){acList.forEach((_,i)=>{const e=document.getElementById('ac'+i);if(e)e.classList.toggle('hi',i===acIdx);});}
+function pickH(v) {
+  if(!v||hoods.includes(v)){document.getElementById('hood-input').value='';document.getElementById('ac-dd').style.display='none';return;}
+  hoods.push(v); renderTags(); showSug(v);
+  document.getElementById('hood-input').value=''; document.getElementById('ac-dd').style.display='none'; acList=[]; upd();
+}
+function remH(v) {
+  hoods=hoods.filter(h=>h!==v);
+  PRESETS.forEach((p,i)=>{
+    if(activePresets.has(i)&&p.h.every(h=>!hoods.includes(h))){
+      activePresets.delete(i);
+      document.getElementById('preset-chips').querySelectorAll('.chip').forEach(c=>{if(c.textContent===p.l)c.classList.remove('sel');});
+    }
+  });
+  renderTags(); upd();
+}
+function renderTags() {
+  document.getElementById('hood-tags').innerHTML=hoods.map(h=>`<div class="tag">${h}<button onclick="remH('${h}')">×</button></div>`).join('');
+  document.getElementById('neighborhoods').value=hoods.join(', ');
+}
+function showSug(last) {
+  const el=document.getElementById('sug-row');
+  const rel=(REL[last]||[]).filter(n=>!hoods.includes(n)).slice(0,4);
+  el.innerHTML=rel.length?`<div class="sug-label">People also add:</div><div class="sug-chips">${rel.map(n=>`<button class="sug-chip" onclick="pickH('${n}')">+ ${n}</button>`).join('')}</div>`:'';
+}
+document.addEventListener('click',e=>{if(!e.target.closest('#hood-input')&&!e.target.closest('#ac-dd'))document.getElementById('ac-dd').style.display='none';});
+
+function toggleBed(el,v) {
+  if(el.classList.contains('sel')){el.classList.remove('sel');beds=beds.filter(b=>b!==v);delete budgets[v];}
+  else{el.classList.add('sel');beds.push(v);beds.sort((a,b)=>BED_ORD.indexOf(a)-BED_ORD.indexOf(b));}
+  document.getElementById('bedrooms').value=beds.join(', ');
+  renderBeds(); upd();
+}
+function renderBeds() {
+  document.getElementById('bed-budgets').innerHTML=beds.map(b=>`
+    <div class="bed-bud">
+      <div class="bed-bud-label">${b} — Monthly Budget</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <input type="text" id="bmin-${b.replace(/ /g,'')}" placeholder="Min e.g. $3,000" oninput="fmt(this);budgets['${b}']={...(budgets['${b}']||{}),min:this.value}"/>
+        <input type="text" id="bmax-${b.replace(/ /g,'')}" placeholder="Max e.g. $4,500" oninput="fmt(this);budgets['${b}']={...(budgets['${b}']||{}),max:this.value}"/>
+      </div>
+    </div>`).join('');
+}
+
+function fmt(inp){const r=inp.value.replace(/[^0-9]/g,'');inp.value=r?'$'+parseInt(r,10).toLocaleString():'';}
+
+function sc(el,field,val) {
+  el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel'); document.getElementById(field).value=val;
+  if(field==='buying') document.getElementById('buy-fields').style.display=val!=='no'?'block':'none';
+  upd();
+}
+
+// ===== AMENITIES =====
+let amenities = {}; // { key: 'want' | 'need' }
+
+function tapAmenity(chip, key) {
+  const toggle = chip.querySelector('.ac-toggle');
+  if (!amenities[key]) {
+    // unselected → want
+    amenities[key] = 'want';
+    chip.classList.add('want');
+    toggle.style.display = 'inline-flex';
+  } else if (amenities[key] === 'want') {
+    // want → need
+    amenities[key] = 'need';
+    chip.classList.remove('want');
+    chip.classList.add('need');
+    chip.querySelector('.want-opt').classList.remove('active');
+    chip.querySelector('.need-opt').classList.add('active');
+  } else {
+    // need → deselect
+    delete amenities[key];
+    chip.classList.remove('want','need');
+    toggle.style.display = 'none';
+    chip.querySelector('.want-opt').classList.add('active');
+    chip.querySelector('.need-opt').classList.remove('active');
+  }
+  document.getElementById('amenities').value = JSON.stringify(amenities);
+}
+
+// Toggle between want/need from inside the toggle itself
+document.addEventListener('click', e => {
+  const opt = e.target.closest('.ac-opt');
+  if (!opt) return;
+  e.stopPropagation();
+  const chip = opt.closest('.amenity-chip');
+  if (!chip) return;
+  const key = chip.getAttribute('onclick').match(/'([^']+)'\)/)?.[1];
+  if (!key) return;
+  if (opt.classList.contains('want-opt') && amenities[key] === 'need') {
+    amenities[key] = 'want';
+    chip.classList.remove('need'); chip.classList.add('want');
+    chip.querySelector('.want-opt').classList.add('active');
+    chip.querySelector('.need-opt').classList.remove('active');
+  } else if (opt.classList.contains('need-opt') && amenities[key] === 'want') {
+    amenities[key] = 'need';
+    chip.classList.remove('want'); chip.classList.add('need');
+    chip.querySelector('.want-opt').classList.remove('active');
+    chip.querySelector('.need-opt').classList.add('active');
+  }
+  document.getElementById('amenities').value = JSON.stringify(amenities);
+});
+
+function setPets(val,el) {
+  el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel'); document.getElementById('has-pets').value=val;
+  document.getElementById('pet-details').style.display=val==='yes'?'block':'none'; upd();
+}
+
+function addDog() {
+  dCount++;
+  const d=document.createElement('div');
+  d.id='dog'+dCount;
+  d.style='border:1px solid var(--border);border-radius:10px;padding:12px;margin-bottom:8px;background:var(--surface);position:relative';
+  d.innerHTML=`<div class="block-title">Dog ${dCount}</div><button class="rem-btn" onclick="document.getElementById('dog${dCount}').remove()">×</button>
+    <div class="grid2"><div><label class="fl">Breed</label><input type="text" id="dbr${dCount}" placeholder="e.g. Labrador"/></div>
+    <div><label class="fl">Weight (lbs)</label><input type="number" id="dlb${dCount}" placeholder="lbs" min="1"/></div></div>`;
+  document.getElementById('dog-list').appendChild(d);
+}
+
+function setG(val,el) {
+  el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel'); document.getElementById('gtype').value=val;
+  document.getElementById('g-personal').style.display=val==='personal'?'block':'none';
+  document.getElementById('g-third').style.display=val==='third'?'block':'none'; upd();
+}
+
+function setRef(val,el) {
+  el.parentElement.querySelectorAll('.chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel'); document.getElementById('ref-src').value=val;
+  document.getElementById('ref-name').style.display=val==='referral'?'block':'none';
+  document.getElementById('ref-listing').style.display=val==='listing'?'block':'none';
+  upd();
+}
+
+function selCr(fid,el) {
+  el.parentElement.querySelectorAll('.cr-chip').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel'); document.getElementById(fid).value=el.textContent;
+  upd();
+}
+
+function addPartner() {
+  pCount++;
+  const id='pt'+pCount;
+  const d=document.createElement('div');
+  d.className='block'; d.id=id;
+  d.innerHTML=`<div class="block-title">Search Partner ${pCount}</div>
+    <button class="rem-btn" onclick="remP('${id}',${pCount})">×</button>
+    <div class="grid2" style="margin-bottom:10px">
+      <input type="text" id="p${pCount}fn" placeholder="First name"/>
+      <input type="text" id="p${pCount}ln" placeholder="Last name"/>
+    </div>
+    <div class="grid2">
+      <input type="tel" id="p${pCount}ph" placeholder="Phone"/>
+      <input type="email" id="p${pCount}em" placeholder="Email"/>
+    </div>`;
+  document.getElementById('partners-list').appendChild(d);
+  addFin('p'+pCount,'Search Partner '+pCount);
+}
+function remP(id,n){document.getElementById(id)?.remove();document.getElementById('fin-p'+n)?.remove();}
+
+function addFin(pfx,lbl) {
+  const c=document.getElementById('fin-blocks');
+  const d=document.createElement('div');
+  d.id='fin-'+pfx;
+  d.style='margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)';
+  const isP=pfx==='primary';
+  d.innerHTML=`${!isP?`<div class="block-title" style="margin-bottom:12px">${lbl}</div>`:''}
+    <div class="grid2" style="margin-bottom:12px">
+      <div><label class="fl">Annual income</label><input type="text" id="${pfx}-inc" placeholder="e.g. $75,000" oninput="fmt(this);upd()"/></div>
+      <div><label class="fl">Total liquid assets</label><input type="text" id="${pfx}-ast" placeholder="Savings, stocks..." oninput="fmt(this)"/>
+        <div class="hint">Checking, savings, investments, etc.</div>
+      </div>
+    </div>
+    <label class="fl">Credit score range</label>
+    <div class="credit-grid">
+      <div class="cr-chip" onclick="selCr('${pfx}-cr',this)">Below 580</div>
+      <div class="cr-chip" onclick="selCr('${pfx}-cr',this)">580–619</div>
+      <div class="cr-chip" onclick="selCr('${pfx}-cr',this)">620–659</div>
+      <div class="cr-chip" onclick="selCr('${pfx}-cr',this)">660–699</div>
+      <div class="cr-chip" onclick="selCr('${pfx}-cr',this)">700–739</div>
+      <div class="cr-chip" onclick="selCr('${pfx}-cr',this)">740–779</div>
+      <div class="cr-chip" onclick="selCr('${pfx}-cr',this)">780+</div>
+    </div>
+    <input type="hidden" id="${pfx}-cr"/>`;
+  c.appendChild(d);
+}
+
+function valid() {
+  switch(cur) {
+    case 1: return !!(document.getElementById('s1-first').value.trim()&&document.getElementById('s1-last').value.trim());
+    case 2: return !!(document.getElementById('s2-phone').value.trim()&&document.getElementById('s2-email').value.trim());
+    case 3: return true;
+    case 4: return hoods.length>0;
+    case 5: return beds.length>0;
+    case 6: return !!(document.getElementById('s6-movein').value&&document.getElementById('op').value);
+    case 7: return !!document.getElementById('has-pets').value;
+    case 8: return !!(document.getElementById('primary-inc')?.value&&document.getElementById('primary-cr')?.value);
+    case 9: return !!document.getElementById('gtype').value;
+    case 10: return true;
+    default: return true;
+  }
+}
+
+function upd() { document.getElementById('bnxt').disabled=!valid(); }
+
+function updProg() {
+  const pct=((cur-1)/(TOTAL-1))*100;
+  document.getElementById('pfill').style.width=pct+'%';
+  document.getElementById('plabel').textContent=`Step ${cur} of ${TOTAL}`;
+  document.getElementById('bbk').style.visibility=cur===1?'hidden':'visible';
+}
+
+function next() {
+  if(!valid()) return;
+  if(cur===TOTAL){submit();return;}
+  if(cur===1){const n=document.getElementById('s1-first').value.trim();document.getElementById('s2q').textContent=`Nice to meet you, ${n}! How can we reach you?`;}
+  document.getElementById('step-'+cur).classList.remove('active');
+  cur++;
+  document.getElementById('step-'+cur).classList.add('active');
+  document.getElementById('bnxt').textContent=cur===TOTAL?'Submit →':'Continue →';
+  updProg(); upd(); window.scrollTo(0,0);
+}
+
+function back() {
+  if(cur===1) return;
+  document.getElementById('step-'+cur).classList.remove('active');
+  cur--;
+  document.getElementById('step-'+cur).classList.add('active');
+  document.getElementById('bnxt').textContent=cur===TOTAL?'Submit →':'Continue →';
+  updProg(); upd(); window.scrollTo(0,0);
+}
+
+function collect() {
+  const partners=[];
+  for(let i=1;i<=pCount;i++){
+    if(!document.getElementById('pt'+i)) continue;
+    partners.push({firstName:document.getElementById('p'+i+'fn')?.value||'',lastName:document.getElementById('p'+i+'ln')?.value||'',phone:document.getElementById('p'+i+'ph')?.value||'',email:document.getElementById('p'+i+'em')?.value||'',income:document.getElementById('p'+i+'-inc')?.value||'',assets:document.getElementById('p'+i+'-ast')?.value||'',credit:document.getElementById('p'+i+'-cr')?.value||''});
+  }
+  return {
+    firstName:document.getElementById('s1-first').value,lastName:document.getElementById('s1-last').value,
+    phone:document.getElementById('s2-phone').value,email:document.getElementById('s2-email').value,
+    partners,neighborhoods:document.getElementById('neighborhoods').value,
+    bedrooms:document.getElementById('bedrooms').value,bedBudgets:{...budgets},
+    moveIn:document.getElementById('s6-movein').value,opOnly:document.getElementById('op').value,
+    hasPets:document.getElementById('has-pets').value,
+    amenities:{...amenities},
+    primaryIncome:document.getElementById('primary-inc')?.value||'',
+    primaryAssets:document.getElementById('primary-ast')?.value||'',
+    primaryCredit:document.getElementById('primary-cr')?.value||'',
+    guarantorType:document.getElementById('gtype').value,
+    gFirst:document.getElementById('g-first')?.value||'',gLast:document.getElementById('g-last')?.value||'',
+    gIncome:document.getElementById('g-income')?.value||'',gCredit:document.getElementById('g-cr')?.value||'',
+    gRel:document.getElementById('g-rel')?.value||'',gProv:document.getElementById('g-prov')?.value||'',
+    buying:document.getElementById('buying').value,buyBudget:document.getElementById('buy-budget')?.value||'',
+    buyTimeline:document.getElementById('buy-timeline')?.value||'',
+    refSource:document.getElementById('ref-src').value,refName:document.getElementById('ref-who')?.value||'',
+    refListing:document.getElementById('ref-listing-addr')?.value||'',
+    submittedAt:new Date().toISOString()
+  };
+}
+
+function submit() {
+  const data=collect();
+  const pending=JSON.parse(localStorage.getItem('redesk_pending_clients')||'[]');
+  pending.push(data); localStorage.setItem('redesk_pending_clients',JSON.stringify(pending));
+  document.getElementById('step-area').style.display='none';
+  document.getElementById('bnav').style.display='none';
+  document.getElementById('success').style.display='flex';
+}
+
+initPresets();
+addFin('primary','Primary Applicant');
+updProg(); upd();
+</script>
+</body>
+</html>
